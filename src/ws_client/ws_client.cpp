@@ -139,7 +139,7 @@ namespace nedehe
 				co_await boost::asio::this_coro::executor,
 				std::bind(
 					&nedehe::session::read,
-					this
+					this->shared_from_this()
 				),
 				[] (std::exception_ptr eptr)
 				{
@@ -185,7 +185,7 @@ namespace nedehe
 				co_await boost::asio::this_coro::executor,
 				std::bind(
 					&nedehe::session::write,
-					this
+					this->shared_from_this()
 				),
 				[] (std::exception_ptr eptr)
 				{
