@@ -1,4 +1,4 @@
-path-constant name : $(name)/src ;
+constant name : $(name)/src ;
 
 echo "Build $(name) ..." ;
 

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2025 arisdef.i2p
+// Copyright (c) 2025 arisdf.i2p
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -42,7 +42,6 @@ namespace nedehe
 		virtual public std::enable_shared_from_this<nedehe::session>
 	{
 	private:
-		//boost::beast::tcp_stream __tcp_stream;
 		boost::beast::websocket::stream<boost::beast::tcp_stream> __ws_stream;
 		std::shared_ptr<nedehe::server_info> __server;
 	public:
