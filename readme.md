@@ -25,6 +25,21 @@ Mode:
 
 websocket client - help debug c++ websocket server programming.
 
+Build
+-----------------------------------
+
+Install b2 build,
+
+https://bfgroup.xyz
+
+then build nedehe:
+
+```
+cd nedehe
+b2
+```
+
+
 LICENSE
 -----------------------------------
 
