@@ -84,24 +84,54 @@ namespace nedehe
 		{
 			if (__server->mode == "wr")
 			{
-				while (true)
-				{
-					co_await this->write();
-					co_await this->read();
-				}
+				co_await this->run_cmd_list(
+					[self=this->shared_from_this()] -> boost::asio::awaitable<void>
+					{
+						while (true)
+						{
+							co_await self->write();
+							co_await self->read();
+						}
+					},
+					"mode: wr"
+				);
 			}
 			else if (__server->mode == "rw")
 			{
-				while (true)
-				{
-					co_await this->read();
-					co_await this->write();
-				}
+				co_await this->run_cmd_list(
+					[self=this->shared_from_this()] -> boost::asio::awaitable<void>
+					{
+						while (true)
+						{
+							co_await self->read();
+							co_await self->write();
+						}
+					},
+					"mode: rw"
+				);
 			}
 			else if (__server->mode == "sim")
 			{
-				co_await this->make_read_loop_thread();
-				co_await this->make_write_loop_thread();
+				co_await this->run_cmd_list(
+					[self=this->shared_from_this()] -> boost::asio::awaitable<void>
+					{
+						while (true)
+						{
+							co_await self->read();
+						}
+					},
+					"mode: sim,(read)"
+				);
+				co_await this->run_cmd_list(
+					[self=this->shared_from_this()] -> boost::asio::awaitable<void>
+					{
+						while (true)
+						{
+							co_await self->write();
+						}
+					},
+					"mode: sim,(write)"
+				);
 			}
 			else
 			{
@@ -133,15 +163,12 @@ namespace nedehe
 			co_return;
 		}
 	private:
-		boost::asio::awaitable<void> make_read_loop_thread()
+		boost::asio::awaitable<void> run_cmd_list(auto cmd_list_coro, const std::string_view label)
 		{
 			boost::asio::co_spawn(
 				co_await boost::asio::this_coro::executor,
-				std::bind(
-					&nedehe::session::read,
-					this->shared_from_this()
-				),
-				[] (std::exception_ptr eptr)
+				std::bind(cmd_list_coro),
+				[label=label] (std::exception_ptr eptr)
 				{
 					if (eptr)
 					{
@@ -156,7 +183,8 @@ namespace nedehe
 								std::cout << "[Uer Exit] (1)\n";
 								std::rethrow_exception(eptr);
 							}
-							std::cout << "==== unexpected exception (read,1) ==== ";
+							std::cout << "==== unexpected exception (1) ==== "
+								<< label << "==== ";
 							std::cout << e.what() << " - " << e.code() << std::endl;
 						}
 						catch (const std::exception & e)
@@ -166,12 +194,14 @@ namespace nedehe
 								std::cout << "[Uer Exit] (2)\n";
 								std::rethrow_exception(eptr);
 							}
-							std::cout << "==== unexpected exception (read,2) ==== ";
+							std::cout << "==== unexpected exception (2) ==== "
+								<< label << "==== ";
 							std::cout << e.what() << std::endl;
 						}
 						catch (...)
 						{
-							std::cout << "==== unexpected exception (read,3) ====";
+							std::cout << "==== unexpected exception (3) ===="
+								<< label << "==== ";
 							std::cout << std::endl;
 						}
 					}
@@ -179,53 +209,7 @@ namespace nedehe
 			);
 		}
 	private:
-		boost::asio::awaitable<void> make_write_loop_thread()
-		{
-			boost::asio::co_spawn(
-				co_await boost::asio::this_coro::executor,
-				std::bind(
-					&nedehe::session::write,
-					this->shared_from_this()
-				),
-				[] (std::exception_ptr eptr)
-				{
-					if (eptr)
-					{
-						try
-						{
-							std::rethrow_exception(eptr);
-						}
-						catch (const std::system_error & e)
-						{
-							if ("exit"s == e.what())
-							{
-								std::cout << "[Uer Exit] (3)\n";
-								std::rethrow_exception(eptr);
-							}
-							std::cout << "==== unexpected exception (write,1) ==== ";
-							std::cout << e.what() << " - " << e.code() << std::endl;
-						}
-						catch (const std::exception & e)
-						{
-							if ("exit"s == e.what())
-							{
-								std::cout << "[Uer Exit] (4)\n";
-								std::rethrow_exception(eptr);
-							}
-							std::cout << "==== unexpected exception (write,2) ==== ";
-							std::cout << e.what() << std::endl;
-						}
-						catch (...)
-						{
-							std::cout << "==== unexpected exception (write,3) ====";
-							std::cout << std::endl;
-						}
-					}
-				}
-			);
-		}
-	private:
-		// Read and writ should not terminate program (we do not throw exception simply)
+		// Read and write should not terminate program (we do not throw exception simply)
 		boost::asio::awaitable<void> write()
 		{
 			std::cout << "What do you want to say? (exit to exit) send >>> " << std::flush;
@@ -243,12 +227,12 @@ namespace nedehe
 				std::cout << "Send error! Please try send again," << std::endl;
 				co_return co_await this->write();
 			}
-			std::cout << "Sent: ";
+			std::cout << "Sent:\n";
 			std::cout.write(get.data(), bytes);
 			std::cout << std::endl;
 		}
 	private:
-		// Read and writ should not terminate program (we do not throw exception simply)
+		// Read and write should not terminate program (we do not throw exception simply)
 		boost::asio::awaitable<void> read()
 		{
 			boost::beast::flat_buffer buffer;
@@ -276,7 +260,7 @@ namespace nedehe
 					}
 				}
 			}
-			std::cout << "Received: "
+			std::cout << "Received:\n"
 				<< boost::beast::make_printable(buffer.data()) << std::endl;
 		}
 	};
