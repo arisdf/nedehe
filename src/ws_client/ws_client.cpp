@@ -84,7 +84,7 @@ namespace nedehe
 		{
 			if (__server->mode == "wr")
 			{
-				co_await this->run_cmd_list(
+				co_await this->run_awaitable_cmd_list(
 					[self=this->shared_from_this()] -> boost::asio::awaitable<void>
 					{
 						while (true)
@@ -98,7 +98,7 @@ namespace nedehe
 			}
 			else if (__server->mode == "rw")
 			{
-				co_await this->run_cmd_list(
+				co_await this->run_awaitable_cmd_list(
 					[self=this->shared_from_this()] -> boost::asio::awaitable<void>
 					{
 						while (true)
@@ -112,7 +112,7 @@ namespace nedehe
 			}
 			else if (__server->mode == "sim")
 			{
-				co_await this->run_cmd_list(
+				co_await this->run_awaitable_cmd_list(
 					[self=this->shared_from_this()] -> boost::asio::awaitable<void>
 					{
 						while (true)
@@ -122,7 +122,7 @@ namespace nedehe
 					},
 					"mode: sim,(read)"
 				);
-				co_await this->run_cmd_list(
+				co_await this->run_awaitable_cmd_list(
 					[self=this->shared_from_this()] -> boost::asio::awaitable<void>
 					{
 						while (true)
@@ -163,11 +163,14 @@ namespace nedehe
 			co_return;
 		}
 	private:
-		boost::asio::awaitable<void> run_cmd_list(auto cmd_list_coro, const std::string_view label)
+		boost::asio::awaitable<void> run_awaitable_cmd_list(
+			std::function<boost::asio::awaitable<void>(void)> awaitable_cmd_list,
+			const std::string_view label
+		)
 		{
 			boost::asio::co_spawn(
 				co_await boost::asio::this_coro::executor,
-				std::bind(cmd_list_coro),
+				std::bind(awaitable_cmd_list),
 				[label=label] (std::exception_ptr eptr)
 				{
 					if (eptr)
