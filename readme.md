@@ -30,7 +30,7 @@ Build
 
 Install b2 build,
 
-https://bfgroup.xyz
+https://bfgroup.xyz/b2
 
 then build nedehe:
 

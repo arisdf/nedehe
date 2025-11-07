@@ -67,7 +67,7 @@ namespace nedehe
 	private:
 		boost::asio::awaitable<void> handshake()
 		{
-			__ws_stream.next_layer().expires_after(std::chrono::seconds(60));
+			__ws_stream.next_layer().expires_after(std::chrono::seconds(30));
 			auto [ec] = co_await __ws_stream.async_handshake(
 				__server->host + ":" + __server->port,
 				"/",
@@ -241,7 +241,7 @@ namespace nedehe
 			if (bytes < 1 || (ec && ec != boost::asio::error::eof))
 			{
 				std::cout << "Send error! Please try send again," << std::endl;
-				co_await this->write();
+				co_return co_await this->write();
 			}
 			std::cout << "Sent: ";
 			std::cout.write(get.data(), bytes);
@@ -267,8 +267,8 @@ namespace nedehe
 					std::getline(std::cin, get);
 					if (get == "yes")
 					{
-						co_await this->read();
-						co_return;
+						co_return co_await this->read();
+						//co_return;
 					}
 					else if (get == "no")
 					{
