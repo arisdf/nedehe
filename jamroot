@@ -1,0 +1,6 @@
+path-constant name : nedehe ;
+
+echo "Build $(name) ..." ;
+
+build-project src ;
+

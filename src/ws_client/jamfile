@@ -1,0 +1,16 @@
+path-constant name : $(name)/ws-client ;
+
+echo "Build $(name) ..." ;
+
+prog = ws_client ;
+
+srcs =
+	ws_client.cpp
+;
+
+exe
+	$(prog)
+:
+	$(srcs)
+;
+

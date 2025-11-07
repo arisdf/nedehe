@@ -1,0 +1,28 @@
+path-constant name : $(name)/src ;
+
+echo "Build $(name) ..." ;
+
+#|
+boost networking: boost::asio and boost::beast, they are header-only.
+|#
+
+alias boost_networking ;
+
+#|
+	requirements:
+		required, no-choice, can not be overrided on command-line.
+	default-build:
+		having choice: can be overrided on command-line.
+|#
+
+project
+:
+	requirements
+		<library>boost_networking
+:
+	default-build
+		<cxxstd>26
+;
+
+build-project ws_client ;
+
