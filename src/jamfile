@@ -25,4 +25,5 @@ project
 ;
 
 build-project ws_client ;
+build-project ws_server ;
 

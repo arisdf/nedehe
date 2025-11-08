@@ -1,0 +1,18 @@
+constant name : $(name)/ws_server ;
+
+echo "Build $(name) ..." ;
+
+prog = ws_server ;
+
+srcs =
+	ws_server.cpp
+	listener.cpp
+	session.cpp
+;
+
+exe
+	$(prog)
+:
+	$(srcs)
+;
+

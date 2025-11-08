@@ -1,4 +1,4 @@
-constant name : $(name)/ws-client ;
+constant name : $(name)/ws_client ;
 
 echo "Build $(name) ..." ;
 

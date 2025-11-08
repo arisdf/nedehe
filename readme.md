@@ -25,6 +25,25 @@ Mode:
 
 websocket client - help debug c++ websocket server programming.
 
+ws_server
+-----------------------------------
+
+Example HowTo:
+
+```
+ws_server 127.0.0.1 9001 sim
+```
+
+Create a websocket server hosted on 127.0.0.1 9001, then wait client to chat.
+
+Mode:
+
+* wr - Write then read
+* rw - Read then write
+* sim - Read and write simultaneously (two separated threads)
+
+websocket server - help debug c++ websocket client programming.
+
 Build
 -----------------------------------
 
