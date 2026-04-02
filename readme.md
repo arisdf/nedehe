@@ -64,8 +64,3 @@ LICENSE
 
 Boost Software License
 
-COPYRIGHT
------------------------------------
-
-arisdf.i2p
-
